@@ -25,15 +25,14 @@ import { registerFormSchema, type RegisterFormSchema } from "../forms/register";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
+import { RegisterFormInner } from "../components/RegisterFormInner";
 
 const RegisterPage = () => {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-
   const form = useForm<RegisterFormSchema>({
     resolver: zodResolver(registerFormSchema),
   });
 
-  const onRegisterSubmit = (values: RegisterFormSchema) => {
+  const handleRegisterSubmit = (values: RegisterFormSchema) => {
     alert("register");
   };
 
@@ -49,52 +48,7 @@ const RegisterPage = () => {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onRegisterSubmit)}
-                className="flex flex-col gap-y-1"
-              >
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Label className="mt-4 flex items-center gap-2">
-                  <Checkbox
-                    checked={showPassword}
-                    onCheckedChange={(checked) => setShowPassword(!!checked)}
-                  />
-                  Show Password
-                </Label>
-
-                <Button className="mt-4 w-full">Buat Akun</Button>
-              </form>
+              <RegisterFormInner onRegisterSubmit={handleRegisterSubmit} />
             </Form>
 
             {/* {CONTINUE WITH GOOGLE} */}
