@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { FcGoogle } from "react-icons/fc";
 import { PageContainer } from "~/components/layout/PageContainer";
 import { SectionContainer } from "~/components/layout/SectionContainer";
 import { Button } from "~/components/ui/button";
@@ -9,23 +11,9 @@ import {
   CardFooter,
   CardHeader,
 } from "~/components/ui/card";
-import { Checkbox } from "~/components/ui/checkbox";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import { registerFormSchema, type RegisterFormSchema } from "../forms/register";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { FcGoogle } from "react-icons/fc";
+import { Form } from "~/components/ui/form";
 import { RegisterFormInner } from "../components/RegisterFormInner";
+import { registerFormSchema, type RegisterFormSchema } from "../forms/register";
 
 const RegisterPage = () => {
   const form = useForm<RegisterFormSchema>({
