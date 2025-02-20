@@ -14,14 +14,27 @@ import {
 import { Form } from "~/components/ui/form";
 import { RegisterFormInner } from "../components/RegisterFormInner";
 import { registerFormSchema, type RegisterFormSchema } from "../forms/register";
+import { api } from "~/utils/api";
 
 const RegisterPage = () => {
   const form = useForm<RegisterFormSchema>({
     resolver: zodResolver(registerFormSchema),
   });
 
+  const { mutate: registerUser, isPending: registerUserIsPending } =
+    api.auth.register.useMutation({
+      onSuccess: () => {
+        alert("User registered");
+        form.setValue("email", "");
+        form.setValue("password", "");
+      },
+      onError: () => {
+        alert("Error oncurred");
+      },
+    });
+
   const handleRegisterSubmit = (values: RegisterFormSchema) => {
-    alert("register");
+    registerUser(values);
   };
 
   return (
@@ -36,7 +49,10 @@ const RegisterPage = () => {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <RegisterFormInner onRegisterSubmit={handleRegisterSubmit} />
+              <RegisterFormInner
+                isLoading={registerUserIsPending}
+                onRegisterSubmit={handleRegisterSubmit}
+              />
             </Form>
 
             {/* {CONTINUE WITH GOOGLE} */}

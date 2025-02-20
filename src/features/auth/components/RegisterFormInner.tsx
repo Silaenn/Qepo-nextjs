@@ -13,9 +13,11 @@ import { Label } from "~/components/ui/label";
 import { type RegisterFormSchema } from "../forms/register";
 import { useFormContext } from "react-hook-form";
 import { useState } from "react";
+import { boolean } from "zod";
 
 type RegisterFormInnerProps = {
   onRegisterSubmit: (values: RegisterFormSchema) => void;
+  isLoading?: boolean;
 };
 
 export const RegisterFormInner = (prop: RegisterFormInnerProps) => {
@@ -64,7 +66,9 @@ export const RegisterFormInner = (prop: RegisterFormInnerProps) => {
         Show Password
       </Label>
 
-      <Button className="mt-4 w-full">Buat Akun</Button>
+      <Button disabled={prop.isLoading} className="mt-4 w-full">
+        Buat Akun
+      </Button>
     </form>
   );
 };
