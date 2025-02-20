@@ -15,6 +15,7 @@ import { Form } from "~/components/ui/form";
 import { RegisterFormInner } from "../components/RegisterFormInner";
 import { registerFormSchema, type RegisterFormSchema } from "../forms/register";
 import { api } from "~/utils/api";
+import { toast } from "sonner";
 
 const RegisterPage = () => {
   const form = useForm<RegisterFormSchema>({
@@ -24,12 +25,12 @@ const RegisterPage = () => {
   const { mutate: registerUser, isPending: registerUserIsPending } =
     api.auth.register.useMutation({
       onSuccess: () => {
-        alert("User registered");
+        toast("Akun Kamu Berhasil Dibuat");
         form.setValue("email", "");
         form.setValue("password", "");
       },
       onError: () => {
-        alert("Error oncurred");
+        toast.error("Ada kesalahan terjadi, coba beberapa saat lagi");
       },
     });
 
