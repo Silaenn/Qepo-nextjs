@@ -14,28 +14,43 @@ import {
 import { Form } from "~/components/ui/form";
 import { RegisterFormInner } from "../components/RegisterFormInner";
 import { registerFormSchema, type RegisterFormSchema } from "../forms/register";
-import { api } from "~/utils/api";
 import { toast } from "sonner";
+import { supabase } from "~/lib/supabase/client";
+import { type AuthError } from "@supabase/supabase-js";
+import { SupabaseAuthErrorCode } from "~/lib/supabase/authErorrCodes";
+import { useRouter } from "next/router";
 
 const LoginPage = () => {
   const form = useForm<RegisterFormSchema>({
     resolver: zodResolver(registerFormSchema),
   });
 
-  const { mutate: registerUser, isPending: registerUserIsPending } =
-    api.auth.register.useMutation({
-      onSuccess: () => {
-        toast("Akun Kamu Berhasil Dibuat");
-        form.setValue("email", "");
-        form.setValue("password", "");
-      },
-      onError: () => {
-        toast.error("Ada kesalahan terjadi, coba beberapa saat lagi");
-      },
-    });
+  const router = useRouter();
 
-  const handleRegisterSubmit = (values: RegisterFormSchema) => {
-    registerUser(values);
+  const handleLoginSubmit = async (values: RegisterFormSchema) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) throw error;
+
+      await router.replace("/");
+    } catch (error) {
+      switch ((error as AuthError).code) {
+        case SupabaseAuthErrorCode.invalid_credentials:
+          form.setError("email", { message: "Email atau password salah" });
+          form.setError("password", { message: "Email atau password salah" });
+          break;
+
+        case SupabaseAuthErrorCode.email_not_confirmed:
+          form.setError("email", { message: "Email belum diverifikasi" });
+          break;
+        default:
+          toast.error("Sebuah kesalahan terjadi, coba lagi beberapa saat.");
+      }
+    }
   };
 
   return (
@@ -53,8 +68,8 @@ const LoginPage = () => {
           <CardContent>
             <Form {...form}>
               <RegisterFormInner
-                isLoading={registerUserIsPending}
-                onRegisterSubmit={handleRegisterSubmit}
+                // isLoading={registerUserIsPending}
+                onRegisterSubmit={handleLoginSubmit}
                 buttonText="Masuk"
               />
             </Form>
