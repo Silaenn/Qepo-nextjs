@@ -43,7 +43,9 @@ const LoginPage = () => {
       <SectionContainer className="flex min-h-[calc(100vh-144px)] w-full flex-col justify-center">
         <Card className="w-full max-w-[480px] self-center">
           <CardHeader className="flex flex-col items-center justify-center">
-            <h1 className="text-3xl font-bold text-primary">Buat Akun</h1>
+            <h1 className="text-3xl font-bold text-primary">
+              Selamat Datang Kembali
+            </h1>
             <p className="text-muted-foreground">
               Qepoin kreator favorite kamu
             </p>
@@ -53,6 +55,7 @@ const LoginPage = () => {
               <RegisterFormInner
                 isLoading={registerUserIsPending}
                 onRegisterSubmit={handleRegisterSubmit}
+                buttonText="Masuk"
               />
             </Form>
 
@@ -69,13 +72,13 @@ const LoginPage = () => {
 
             <Button variant="secondary" className="w-full" size="lg">
               <FcGoogle />
-              Buat Akun dengan Google
+              Masuk dengan Google
             </Button>
 
             <p>
-              Sudah punya akun?{" "}
-              <Link href="/login" className="font-bold text-blue-800">
-                P, Login
+              Belum punya akun?{" "}
+              <Link href="/register" className="font-bold text-blue-800">
+                Daftar dong
               </Link>
             </p>
           </CardFooter>

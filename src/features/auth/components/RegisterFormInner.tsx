@@ -18,6 +18,8 @@ import { boolean } from "zod";
 type RegisterFormInnerProps = {
   onRegisterSubmit: (values: RegisterFormSchema) => void;
   isLoading?: boolean;
+  buttonText?: string;
+  showPasswords?: boolean;
 };
 
 export const RegisterFormInner = (prop: RegisterFormInnerProps) => {
@@ -58,16 +60,18 @@ export const RegisterFormInner = (prop: RegisterFormInnerProps) => {
         )}
       />
 
-      <Label className="mt-4 flex items-center gap-2">
-        <Checkbox
-          checked={showPassword}
-          onCheckedChange={(checked) => setShowPassword(!!checked)}
-        />
-        Show Password
-      </Label>
+      {prop.showPasswords && (
+        <Label className="mt-4 flex items-center gap-2">
+          <Checkbox
+            checked={showPassword}
+            onCheckedChange={(checked) => setShowPassword(!!checked)}
+          />
+          Show Password
+        </Label>
+      )}
 
       <Button disabled={prop.isLoading} className="mt-4 w-full">
-        Buat Akun
+        {prop.buttonText ?? "Buat Akun"}
       </Button>
     </form>
   );

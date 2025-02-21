@@ -53,6 +53,7 @@ const RegisterPage = () => {
               <RegisterFormInner
                 isLoading={registerUserIsPending}
                 onRegisterSubmit={handleRegisterSubmit}
+                showPasswords
               />
             </Form>
 
