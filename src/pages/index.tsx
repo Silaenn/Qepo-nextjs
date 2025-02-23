@@ -2,9 +2,14 @@ import { Moon, Sun } from "lucide-react";
 import { Button } from "~/components/ui/button";
 
 import { useTheme } from "next-themes";
+import { supabase } from "~/lib/supabase/client";
 
 export default function Home() {
   const { setTheme } = useTheme();
+
+  const handleLogout = () => {
+    void supabase.auth.signOut();
+  };
   return (
     <>
       <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background">
@@ -15,6 +20,9 @@ export default function Home() {
         </Button>
         <Button onClick={() => setTheme("light")} size="icon">
           <Sun />
+        </Button>
+        <Button onClick={handleLogout} variant="destructive">
+          Keluar
         </Button>
       </main>
     </>
