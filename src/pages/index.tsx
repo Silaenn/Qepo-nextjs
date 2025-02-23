@@ -8,6 +8,7 @@ export default function Home() {
   const { setTheme } = useTheme();
 
   const handleLogout = () => {
+    alert("logout");
     void supabase.auth.signOut();
   };
   return (

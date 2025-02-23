@@ -57,7 +57,10 @@ const LoginPage = () => {
   return (
     <GuestRoute>
       <PageContainer>
-        <SectionContainer className="flex min-h-[calc(100vh-144px)] w-full flex-col justify-center">
+        <SectionContainer
+          padded
+          className="flex min-h-[calc(100vh-144px)] w-full flex-col justify-center"
+        >
           <Card className="w-full max-w-[480px] self-center">
             <CardHeader className="flex flex-col items-center justify-center">
               <h1 className="text-3xl font-bold text-primary">
