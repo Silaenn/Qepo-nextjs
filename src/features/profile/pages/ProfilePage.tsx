@@ -1,24 +1,35 @@
-import { useEffect, useRef } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { TRPCClientError } from "@trpc/client";
+import {
+  type ChangeEventHandler,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { AuthRoute } from "~/components/layout/AuthRoute";
 import { PageContainer } from "~/components/layout/PageContainer";
 import { SectionContainer } from "~/components/layout/SectionContainer";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
+import { Form } from "~/components/ui/form";
 import { api } from "~/utils/api";
 import { EditProfileFormInner } from "../components/EditProfileFormInner";
-import { AuthRoute } from "~/components/layout/AuthRoute";
-import { useForm } from "react-hook-form";
 import {
   editProfileFormSchema,
   type EditProfileFormSchema,
 } from "../forms/edit-profile";
-import { Form } from "~/components/ui/form";
-import { toast } from "sonner";
-import { TRPCError } from "@trpc/server";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { TRPCClientError } from "@trpc/client";
 
 const ProfilePage = () => {
+  const [selectedImage, setSelectedImage] = useState<File | undefined | null>(
+    null,
+  );
+
+  const apiUtils = api.useUtils();
+
   const form = useForm<EditProfileFormSchema>({
     resolver: zodResolver(editProfileFormSchema),
   });
@@ -40,6 +51,17 @@ const ProfilePage = () => {
         }
       }
       toast.error("Gagal update profile");
+    },
+  });
+
+  const updateProflePicture = api.profile.updateProfilePicture.useMutation({
+    onSuccess: () => {
+      toast.success("Berhasil ganti foto profil");
+      setSelectedImage(null);
+      void apiUtils.profile.getProfile.invalidate();
+    },
+    onError: async () => {
+      toast.error("Gagal ganti profil");
     },
   });
 
@@ -67,15 +89,43 @@ const ProfilePage = () => {
     inputFileRef.current?.click();
   };
 
-  const editProfileFormHasChanges =
-    getProfileData?.username !== form.watch("username") ||
-    getProfileData?.bio !== form.watch("bio");
+  const handleRemoveSelectImage = () => {
+    setSelectedImage(null);
+  };
+
+  const handleUpdateProfilePicture = () => {
+    if (selectedImage) {
+      const reader = new FileReader();
+
+      reader.onloadend = function () {
+        const result = reader.result as string;
+        const imageBase64 = result.substring(result.indexOf(",") + 1);
+
+        updateProflePicture.mutate(imageBase64);
+      };
+
+      reader.readAsDataURL(selectedImage);
+    }
+  };
+
+  const onPickProfilePicture: ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (e.target.files) {
+      setSelectedImage(e.target.files[0]);
+    }
+  };
+
+  const selectedProfilePicturePreview = useMemo(() => {
+    if (selectedImage) {
+      return URL.createObjectURL(selectedImage);
+    }
+  }, [selectedImage]);
 
   useEffect(() => {
     if (getProfileData) {
       form.setValue("username", getProfileData.username ?? "");
       form.setValue("bio", getProfileData.bio ?? "");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getProfileData]);
 
   return (
@@ -88,12 +138,43 @@ const ProfilePage = () => {
               <div className="flex flex-col gap-4">
                 <Avatar className="size-24">
                   <AvatarFallback>VF</AvatarFallback>
-                  <AvatarImage />
+                  <AvatarImage
+                    src={
+                      selectedProfilePicturePreview ??
+                      getProfileData?.profilePictureUrl ??
+                      ""
+                    }
+                  />
                 </Avatar>
-                <Button onClick={handleOpenFileExplorer} size="sm">
+                <Button
+                  variant={"secondary"}
+                  onClick={handleOpenFileExplorer}
+                  size="sm"
+                >
                   Ganti Foto
                 </Button>
-                <input className="hidden" type="file" ref={inputFileRef} />
+                {!!selectedImage && (
+                  <>
+                    <Button
+                      onClick={handleRemoveSelectImage}
+                      variant={"destructive"}
+                      size={"sm"}
+                    >
+                      Hapus
+                    </Button>
+                    <Button onClick={handleUpdateProfilePicture} size={"sm"}>
+                      Simpan
+                    </Button>
+                  </>
+                )}
+
+                <input
+                  accept="image/*"
+                  onChange={onPickProfilePicture}
+                  className="hidden"
+                  type="file"
+                  ref={inputFileRef}
+                />
               </div>
 
               <div className="grid flex-1 grid-cols-2">
